@@ -45,7 +45,7 @@ export const createContact = catchAsyncErr(async (req, res) => {
   const { value, error } = createContactSchema.validate(req.body)
   
   if (error) {
-    throw HttpError(400, error)
+    throw HttpError(400, error.message)
   }
 
   const { name, email, phone } = value;
@@ -68,5 +68,6 @@ export const updateContact = catchAsyncErr(async (req, res) => {
   if (!newData) {
     throw HttpError(400, "Not found")
   }
+
   res.status(200).json(newData)
 });
