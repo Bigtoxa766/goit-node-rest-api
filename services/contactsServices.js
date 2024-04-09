@@ -50,8 +50,10 @@ async function updateContactData(contactId, updatedContact) {
   try {
   const updatedContactData = await Contact.findByIdAndUpdate(contactId, updatedContact, { new: true });
     
-    if(!updatedContactData) throw HttpError(404, "Not found")
-  
+    if (!updatedContactData) throw HttpError(404, "Not found")
+    
+    return updatedContactData;
+
 } catch (error) {
     console.log(error.message)
 }
@@ -61,7 +63,10 @@ async function updatedStatusContact(contactId, body) {
   try {
     const newStatus = await Contact.findByIdAndUpdate(contactId, body, { new: true });
 
-    if(!newStatus) throw HttpError(404, "Not found")
+    if (!newStatus) throw HttpError(404, "Not found")
+    
+    return newStatus;
+    
   } catch (error) {
     console.log(error.message)
   }
