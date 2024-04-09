@@ -1,82 +1,43 @@
-import  {nanoid}  from 'nanoid';
-
-import { promises as fs } from "fs"
-import path from 'path';
-
-const contactsPath = path.resolve('db', 'contacts.json')
+import HttpError from '../helpers/HttpError.js';
+import { Contact } from '../models/contactModel.js';
 
 async function listContacts() {
-
 try {
-  const respRead = await fs.readFile(contactsPath)
-  const contacts = JSON.parse(respRead);
-  return contacts
+  const contacts = await Contact.find();
+
+  if (!contacts) throw HttpError(404, "Not found");
+  
+  return contacts;
 
 } catch (err) {
   console.log(err.message)
 }
 };
 
-async function getContactById(contactId) {
-
-try {
-  const respRead = await fs.readFile(contactsPath);
-  const contactsArr = JSON.parse(respRead);
-
-  const foundContact = contactsArr.find(contact =>
-    contact.id === contactId);
-
-  if (foundContact) {
-    return foundContact;
-  } else {
-    console.log(null)
-  }
-} catch (error) {
-   error.message
-}
-};
-
 async function removeContact(contactId) {
+  try {
+    const deletedContact = await Contact.findByIdAndDelete(contactId);
 
-try {
-  const respRead = await fs.readFile(contactsPath);
-  const contactsArr = JSON.parse(respRead);
+    if (!deletedContact) throw HttpError(404, "Not found");
 
-  const indexToDelete = contactsArr.findIndex(contact =>
-    contact.id === contactId);
-  
-  if (indexToDelete !== -1) {
-    const deletedContact = contactsArr.splice(indexToDelete, 1)[0];
-    
-    await fs.writeFile(contactsPath,
-      JSON.stringify(contactsArr));
-    
     return deletedContact;
-    
-  } else {
-    console.log(null)
-  };
-} catch (error) {
-   error.message
-  };
+  } catch (error) {
+    console.log(error.message)
+  }
 };
 
-async function addContact(name, email, phone) {
+async function addContact(name, email, phone, fvorite) {
   try {
-    const respRead = await fs.readFile(contactsPath);
-    const contactsArr = JSON.parse(respRead);
-
-    const newContact = {
-      id: nanoid(),
+    const newContactObj = {
       name,
       email,
       phone,
-    }
+      fvorite
+    };
 
-    contactsArr.push(newContact)
+    const newContact = await Contact.create(newContactObj);
 
-    await fs.writeFile(contactsPath,
-      JSON.stringify(contactsArr));
+    if (!newContact) throw HttpError(404, "Not found");
     
     return newContact;
 
@@ -87,29 +48,23 @@ async function addContact(name, email, phone) {
 
 async function updateContactData(contactId, updatedContact) {
   try {
-    const respRead = await fs.readFile(contactsPath);
-    const contactsArr = JSON.parse(respRead);
-
-    const updatedContactsArr = contactsArr.map(contact => {
-
-      if (contact.id === contactId) {
-        return {
-          ...contact,
-          ...updatedContact
-        }
-      }
-
-      return contact
-    });
-
-    await fs.writeFile(contactsPath,
-      JSON.stringify(updatedContactsArr))
-
-    return updatedContactsArr.find(contact =>
-      contact.id === contactId);
-  } catch (error) {
-    console.log(err.message)
-  }
+  const updatedContactData = await Contact.findByIdAndUpdate(contactId, updatedContact, { new: true });
+    
+    if(!updatedContactData) throw HttpError(404, "Not found")
+  
+} catch (error) {
+    console.log(error.message)
 }
+};
 
-export { addContact, removeContact, getContactById, listContacts, updateContactData };
+async function updatedStatusContact(contactId, body) {
+  try {
+    const newStatus = await Contact.findByIdAndUpdate(contactId, body, { new: true });
+
+    if(!newStatus) throw HttpError(404, "Not found")
+  } catch (error) {
+    console.log(error.message)
+  }
+};
+
+export { addContact, removeContact, listContacts, updateContactData, updatedStatusContact };
