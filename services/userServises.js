@@ -36,6 +36,13 @@ export const loginUserServise = async ({ email, password }) => {
   return { user };
 };
 
+export const getUserById = async (id) => {
+  const user = await User.findOne({_id: id});
+
+  return user;
+};
+
+
 // export const updateUserServise = async (user, updatedUser) => {
 //   Object.keys(updatedUser).forEach(key => {
 //     user[key] = updatedUser[key];

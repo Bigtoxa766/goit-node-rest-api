@@ -5,11 +5,9 @@ import { getCurrent, login, logout, register } from "../controllers/userControll
 const userRouter = express.Router();
 
 userRouter.post('/register', checkRegisterData, register);
-
-userRouter.use(protect);
-
 userRouter.post('/login', checkLoginData, login);
-userRouter.get('/current', getCurrent);
-userRouter.post('/logout', logout);
+
+userRouter.get('/current', protect, getCurrent);
+userRouter.post('/logout', protect,  logout);
 
 export { userRouter };

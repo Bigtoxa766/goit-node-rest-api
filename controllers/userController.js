@@ -23,8 +23,6 @@ export const logout = catchAsyncErr(async (req, res) => {
   // const { id } = req.user;
   const { token } = req.user;
 
-  console.log(token)
-
   await User.findOneAndUpdate({token}, {token: null})
 
   // await User.findByIdAndUpdate(id, { token: null });

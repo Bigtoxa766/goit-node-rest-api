@@ -44,15 +44,22 @@ export const protect = catchAsyncErr(async (req, res, next) => {
 
   if (!userId) {
     throw HttpError(401, "Unauthorized")
-  }
+  };
 
   const currentUser = await User.findById(userId);
 
   if (!currentUser) {
     throw HttpError(401, "Unauthorized")
-  }
+  };
 
-  req.user = currentUser;
+  if (currentUser && currentUser.token === getToken) {
 
-  next();
+    req.user = currentUser;
+    next();
+  } else {
+    
+    res.status(401).json({
+      message: 'Unauthorized'
+    });
+  };
 });

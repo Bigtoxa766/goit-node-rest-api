@@ -16,13 +16,13 @@ const contactShema = new Schema({
   favorite: {
     type: Boolean,
     default: false,
-  }
-}, {
-  versionKey: false,
+  },
   owner: {
       type: Schema.Types.ObjectId,
       ref: 'users',
     }
+}, {
+  versionKey: false,
 });
 
 export const Contact = model('contacts', contactShema)

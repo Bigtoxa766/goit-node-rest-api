@@ -3,7 +3,7 @@ import { Contact } from '../models/contactModel.js';
 
 async function listContacts() {
 try {
-  const contacts = await Contact.find();
+  const contacts = await Contact.find().populate('owner');
 
   if (!contacts) throw HttpError(404, "Not found");
   
@@ -14,11 +14,28 @@ try {
 }
 };
 
-async function removeContact(contactId) {
-  try {
-    const deletedContact = await Contact.findByIdAndDelete(contactId);
+async function getContact(id, contactOwner) {
+  
+  const contact = await Contact.findById(id);
 
-    if (!deletedContact) throw HttpError(404, "Not found");
+  if (!contact || (contact.owner.toString() !== contactOwner.id)) {
+    throw HttpError(404, "Contact not found")
+  }
+  
+  return contact;
+};
+
+async function removeContact(contactId, contactOwner) {
+  try {
+    const deletedContact = await Contact.findOneAndDelete({
+      _id: contactId,
+      owner: contactOwner
+    });
+
+    if (!deletedContact || (deletedContact.owner.toString() !== 
+      contactOwner.id)) {
+      throw HttpError(404, "Not found")
+    };
 
     return deletedContact;
   } catch (error) {
@@ -26,16 +43,9 @@ async function removeContact(contactId) {
   }
 };
 
-async function addContact(name, email, phone, fvorite) {
+async function addContact({name, email, phone, fvorite}, owner) {
   try {
-    const newContactObj = {
-      name,
-      email,
-      phone,
-      fvorite
-    };
-
-    const newContact = await Contact.create(newContactObj);
+    const newContact = await Contact.create({name, email, phone, fvorite, owner: owner.id});
 
     if (!newContact) throw HttpError(404, "Not found");
     
@@ -46,11 +56,13 @@ async function addContact(name, email, phone, fvorite) {
 }
 };
 
-async function updateContactData(contactId, updatedContact) {
+async function updateContactData(contactId, updatedContact, owner) {
   try {
   const updatedContactData = await Contact.findByIdAndUpdate(contactId, updatedContact, { new: true });
     
-    if (!updatedContactData) throw HttpError(404, "Not found")
+    if (!updatedContactData || (updatedContactData.owner.toString() !== owner.id)) {
+      throw HttpError(404, "Not found")
+    }
     
     return updatedContactData;
 
@@ -59,11 +71,13 @@ async function updateContactData(contactId, updatedContact) {
 }
 };
 
-async function updatedStatusContact(contactId, body) {
+async function updatedStatusContact(contactId, body, owner) {
   try {
     const newStatus = await Contact.findByIdAndUpdate(contactId, body, { new: true });
 
-    if (!newStatus) throw HttpError(404, "Not found")
+    if (!newStatus || (newStatus.owner.toString() !== owner.id)) {
+      throw HttpError(404, "Not found")
+    }
     
     return newStatus;
     
@@ -72,4 +86,4 @@ async function updatedStatusContact(contactId, body) {
   }
 };
 
-export { addContact, removeContact, listContacts, updateContactData, updatedStatusContact };
+export { addContact, getContact, removeContact, listContacts, updateContactData, updatedStatusContact };
