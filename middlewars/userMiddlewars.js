@@ -10,7 +10,7 @@ export const checkRegisterData = catchAsyncErr(async (req, res, next) => {
   const { value, error } = registerUserSchema.validate(req.body);
 
   if (error) {
-    throw HttpError(400, error)
+    throw HttpError(400, "Bad request")
   }
 
   const isExist = await checkUserExistsService({ email: value.email });

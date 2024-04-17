@@ -7,7 +7,10 @@ export const register = catchAsyncErr(async (req, res) => {
   const { newUser } = await registerUserServise(req.body);
   
   res.status(201).json({
-    user: newUser
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription
+    }
   });
 });
 
@@ -15,17 +18,18 @@ export const login = catchAsyncErr(async (req, res) => {
   const { user } = await loginUserServise(req.body);
 
   res.status(201).json({
-    user
+    token: user.token,
+    user: {
+      email: user.email,
+      subscription: user.subscription
+    }
   })
 });
 
 export const logout = catchAsyncErr(async (req, res) => {
-  // const { id } = req.user;
   const { token } = req.user;
 
   await User.findOneAndUpdate({token}, {token: null})
-
-  // await User.findByIdAndUpdate(id, { token: null });
 
   res.status(204).json({
     message: 'No content'

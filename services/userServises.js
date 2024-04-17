@@ -17,13 +17,13 @@ export const loginUserServise = async ({ email, password }) => {
   const user = await User.findOne({ email }).select('+password');
 
   if (!user) {
-    throw HttpError(401, 'Unauthorized')
+    throw HttpError(401, 'Email or password is wrong')
   }
 
   const passwordIsValide = await user.checkPass(password, user.password);
 
   if (!passwordIsValide) {
-    throw HttpError(401, 'Unauthorized')
+    throw HttpError(401, 'Email or password is wrong')
   }
 
   const token = signToken(user.id);
