@@ -1,46 +1,66 @@
-import { addContact, listContacts, removeContact, updateContactData, updatedStatusContact} from "../services/contactsServices.js";
+import { addContact, getContact, listContacts, removeContact, updateContactData, updatedStatusContact} from "../services/contactsServices.js";
 import { catchAsyncErr } from "../utils/catchAsyncErr.js";
 
-export const getAllContacts = catchAsyncErr(async (_, res) => {
-  const contacts = await listContacts();
+export const getAllContacts = catchAsyncErr(async (req, res) => {
+  const {contacts, total} = await listContacts(req.query, req.user);
   
-  res.status(200).json(contacts)
+  res.status(200).json({
+    total,
+    contacts
+  })
 });
 
 export const getOneContact = catchAsyncErr(async (req, res) => {
-  const { contact } = req;
+  const contact = await getContact(req.params.id, req.user);
 
   res.status(200).json(contact);
 });
 
 export const deleteContact = catchAsyncErr(async (req, res) => {
-  const { id } = req.params;
+  const contact = await removeContact(req.params.id, req.user)
 
-  const deletedContct = await removeContact(id);
-
-  res.status(200).json(deletedContct);
+  if (contact) {
+    res.status(200).json(contact)
+  } else {
+    res.status(404).json({
+      message: "Not found"
+    })
+  }
+  res.status(200).json(contact);
 });
 
 export const createContact = catchAsyncErr(async (req, res) => {
+  const newUser = await addContact(req.body, req.user);
 
-  const { name, email, phone } = req.cont;
-  const newUser = await addContact(name, email, phone)
-
-  res.status(201).json(newUser)
+  if (newUser) {
+    res.status(201).json(newUser)
+  } else {
+    res.status(404).json({
+      message: "Not found"
+    })
+  }
 });
 
 export const updateContact = catchAsyncErr(async (req, res) => {
-  const { contact, body } = req;
+  const update = await updateContactData(req.params.id, req.body, req.user)
 
-  const updatedContact = await updateContactData(contact.id, body)
-
-  res.status(200).json(updatedContact)
+  if (update) {
+    res.status(200).json(update);
+  } else {
+    res.status(404).json({
+      message: 'Contact not found'
+    })
+  };
 });
 
 export const updateStatusContact = catchAsyncErr(async (req, res) => {
-  const { contact, body } = req;
+  const updatedStatus = await updatedStatusContact(req.params.id, req.body, req.user);
 
-  const updatedStatus = await updatedStatusContact(contact.id, body);
-
-  res.status(200).json(updatedStatus);
-})
+  if (updatedStatus) {
+    res.status(200).json(updatedStatus);
+  } else {
+    res.status(404).json({
+      message: "Contact no found"
+    });
+  }
+});

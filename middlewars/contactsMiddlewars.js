@@ -39,13 +39,15 @@ export const checkContactId = catchAsyncErr(async (req, _, next) => {
   const { id } = req.params;
   const isValid = Types.ObjectId.isValid(id);
 
-  if (!isValid) throw HttpError(404, "User not found");
+  if (!isValid) throw HttpError(404, "Contact not found");
   
-  const contact = await Contact.findById(id);
+  const contacts = await Contact.findById(id, req.user);
 
-  if (!contact) throw HttpError(404, "User not found")
+  if (!contacts || contacts.owner.toString() !== req.user.id) {
+    throw HttpError(404, "User not found")
+  }
   
-  req.contact = contact;
+  req.contacts = contacts;
 
   next();
 })

@@ -7,7 +7,7 @@ export const createContactSchema = Joi.object({
     tlds: { allow: ['com', 'net'] }
   }).required(),
   phone: Joi.string().required().min(7),
-  favorite: Joi.boolean()
+  favorite: Joi.boolean(),
 })
   .options({ abortEarly: false });
 
@@ -21,5 +21,5 @@ export const updateContactSchema = Joi.object({
 }).or('name', 'email', 'phone').options({ abortEarly: false });
 
 export const updateContactStatusSchema = Joi.object({
-favorite: Joi.boolean().required()
-})
+  favorite: Joi.boolean().required()
+});
