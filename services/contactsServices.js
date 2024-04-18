@@ -1,13 +1,22 @@
 import HttpError from '../helpers/HttpError.js';
 import { Contact } from '../models/contactModel.js';
 
-async function listContacts() {
+async function listContacts(query, currentUser) {
 try {
-  const contacts = await Contact.find().populate('owner');
+  const contactsQuery = Contact.find({owner: currentUser})
+
+  const page = query.page ? +query.page : 1;
+  const limit = query.limit ? +query.limit : 3;
+  const toSkip = (page - 1) * limit;
+
+  contactsQuery.skip(toSkip).limit(limit)
+
+  const contacts = await contactsQuery;
+  const total = await Contact.countDocuments({owner: currentUser})
 
   if (!contacts) throw HttpError(404, "Not found");
   
-  return contacts;
+  return {contacts, total};
 
 } catch (err) {
   console.log(err.message)
@@ -43,16 +52,16 @@ async function removeContact(contactId, contactOwner) {
   }
 };
 
-async function addContact({name, email, phone, fvorite}, owner) {
+async function addContact({name, email, phone, favorite}, owner) {
   try {
-    const newContact = await Contact.create({name, email, phone, fvorite, owner: owner.id});
-
+    const newContact = await Contact.create({name, email, phone, favorite, owner: owner.id});
+    
     if (!newContact) throw HttpError(404, "Not found");
     
     return newContact;
 
 } catch (err) {
-  console.log(err.message)
+  err.message
 }
 };
 

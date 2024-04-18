@@ -1,10 +1,13 @@
 import { addContact, getContact, listContacts, removeContact, updateContactData, updatedStatusContact} from "../services/contactsServices.js";
 import { catchAsyncErr } from "../utils/catchAsyncErr.js";
 
-export const getAllContacts = catchAsyncErr(async (_, res) => {
-  const contacts = await listContacts();
+export const getAllContacts = catchAsyncErr(async (req, res) => {
+  const {contacts, total} = await listContacts(req.query, req.user);
   
-  res.status(200).json(contacts)
+  res.status(200).json({
+    total,
+    contacts
+  })
 });
 
 export const getOneContact = catchAsyncErr(async (req, res) => {
