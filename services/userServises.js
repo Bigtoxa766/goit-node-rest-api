@@ -1,5 +1,6 @@
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
+import { resizeImg } from "./imageService.js";
 import { signToken } from "./jwtServises.js";
 
 export const registerUserServise = async (data) => {
@@ -42,11 +43,10 @@ export const getUserById = async (id) => {
   return user;
 };
 
+export const updateUserAvatar = async (id, avatar) => {
+  const user = await User.findOne({ _id: id });
 
-// export const updateUserServise = async (user, updatedUser) => {
-//   Object.keys(updatedUser).forEach(key => {
-//     user[key] = updatedUser[key];
-//   });
-
-//   return user.save()
-// };
+  user.avatarURL = avatar;
+  
+  return await user.save()
+};
