@@ -7,7 +7,7 @@ import {
   updateContact,
   updateStatusContact,
 } from "../controllers/contactsControllers.js";
-import { checkContactId, checkCreateContactData, checkUpdateContactDta, checkUpdateContactStatusData } from "../middlewars/contactsMiddlewars.js";
+import {  checkCreateContactData, checkUpdateContactDta, checkUpdateContactStatusData } from "../middlewars/contactsMiddlewars.js";
 import { protect } from "../middlewars/userMiddlewars.js";
 
 const contactsRouter = express.Router();
@@ -16,18 +16,18 @@ contactsRouter.use(protect);
 
 contactsRouter.get("/", getAllContacts);
 
-contactsRouter.get("/:id", checkContactId, getOneContact);
+contactsRouter.get("/:id", getOneContact);
 
-contactsRouter.delete("/:id", checkContactId, deleteContact);
+contactsRouter.delete("/:id", deleteContact);
 
 contactsRouter.post("/", checkCreateContactData,
   createContact);
 
-contactsRouter.put("/:id", checkContactId,
+contactsRouter.put("/:id",
   checkUpdateContactDta,
   updateContact);
 
-contactsRouter.patch("/:id/favorite", checkContactId,
+contactsRouter.patch("/:id/favorite",
   checkUpdateContactStatusData,
   updateStatusContact);
 

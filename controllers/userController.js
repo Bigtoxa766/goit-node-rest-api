@@ -18,7 +18,13 @@ export const register = catchAsyncErr(async (req, res) => {
 export const login = catchAsyncErr(async (req, res) => {
   const { user } = await loginUserServise(req.body);
 
-  res.status(201).json({
+  if (!user) {
+    res.status(400).json({
+      message: 'All fields is required'
+    })
+  }
+
+  res.status(200).json({
     token: user.token,
     user: {
       email: user.email,
@@ -52,7 +58,7 @@ export const updateAvatar = catchAsyncErr(async (req, res) => {
     const user = await updateUserAvatar(req.user._id, avatar);
     
     res.status(200).json({
-      user
+      avatrURL: user.avatarURL
     })
   }
 });

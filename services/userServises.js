@@ -1,6 +1,5 @@
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
-import { resizeImg } from "./imageService.js";
 import { signToken } from "./jwtServises.js";
 
 export const registerUserServise = async (data) => {
