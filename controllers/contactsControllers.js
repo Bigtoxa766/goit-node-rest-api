@@ -15,6 +15,7 @@ export const getOneContact = catchAsyncErr(async (req, res) => {
  
   if (vlidateId(req.params.id)) {
     const contact = await getContact(req.params.id, req.user);
+    
     if (contact) {
       res.status(200).json(contact);
     } else {
@@ -64,7 +65,7 @@ export const updateContact = catchAsyncErr(async (req, res) => {
  
   if (vlidateId(req.params.id)) {
     const update = await updateContactData(req.params.id, req.body, req.user)
-console.log({update})
+
     if (update) {
     res.status(200).json({contact: update});
   } else {
@@ -72,6 +73,10 @@ console.log({update})
       message: 'Contact not found'
     })
   };
+  } else {
+    res.status(404).json({
+      message: 'Contact not found'
+    })
   }
 });
 
