@@ -25,7 +25,10 @@ try {
 
 async function getContact(id, contactOwner) {
   
-  const contact = await Contact.findById(id);
+  const contact = await Contact.findOne({
+    _id: id,
+    owner: contactOwner
+  });
 
   if (!contact || (contact.owner.toString() !== contactOwner.id)) {
     throw HttpError(404, "Contact not found")
@@ -65,11 +68,16 @@ async function addContact({name, email, phone, favorite}, owner) {
 }
 };
 
-async function updateContactData(contactId, updatedContact, owner) {
+async function updateContactData(contactId, updatedContact, user) {
   try {
-  const updatedContactData = await Contact.findByIdAndUpdate(contactId, updatedContact, { new: true });
+    const updatedContactData = await Contact.findOneAndUpdate({
+        _id: contactId,
+        owner: user,
+      },
+      updatedContact,
+      { new: true });
     
-    if (!updatedContactData || (updatedContactData.owner.toString() !== owner.id)) {
+    if (!updatedContactData || (updatedContactData.owner.toString() !== user.id)) {
       throw HttpError(404, "Not found")
     }
     
@@ -80,11 +88,11 @@ async function updateContactData(contactId, updatedContact, owner) {
 }
 };
 
-async function updatedStatusContact(contactId, body, owner) {
+async function updatedStatusContact(contactId, body, contactOwner) {
   try {
-    const newStatus = await Contact.findByIdAndUpdate(contactId, body, { new: true });
+    const newStatus = await Contact.findOneAndUpdate({_id:contactId, owner: contactOwner}, body, { new: true });
 
-    if (!newStatus || (newStatus.owner.toString() !== owner.id)) {
+    if (!newStatus || (newStatus.owner.toString() !== contactOwner.id)) {
       throw HttpError(404, "Not found")
     }
     

@@ -35,20 +35,19 @@ export const checkUpdateContactStatusData = catchAsyncErr(async (req, _, next) =
   next();
 })
 
-export const checkContactId = catchAsyncErr(async (req, _, next) => {
-  const { id } = req.params;
-  const isValid = Types.ObjectId.isValid(id);
+// export const checkContactId = catchAsyncErr(async (req, _, next) => {
+//   const { id } = req.params;
+//   const isValid = Types.ObjectId.isValid(id);
 
-  if (!isValid) throw HttpError(404, "Contact not found");
+//   if (!isValid) throw HttpError(404, "Contact not found");
   
-  const contacts = await Contact.findById(id, req.user);
+//   const contacts = await Contact.findById(id, req.user);
 
-  if (!contacts || contacts.owner.toString() !== req.user.id) {
-    throw HttpError(404, "User not found")
-  }
+//   if (!contacts || contacts.owner.toString() !== req.user.id) {
+//     throw HttpError(404, "User not found")
+//   }
   
-  req.contacts = contacts;
+//   req.contacts = contacts;
 
-  next();
-})
-
+//   next();
+// })

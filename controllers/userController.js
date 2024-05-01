@@ -1,5 +1,6 @@
 import { User } from "../models/userModel.js";
-import { loginUserServise, registerUserServise } from "../services/userServises.js";
+import { resizeImg } from "../services/imageService.js";
+import { loginUserServise, registerUserServise, updateUserAvatar } from "../services/userServises.js";
 import { catchAsyncErr } from "../utils/catchAsyncErr.js";
 
 
@@ -17,7 +18,13 @@ export const register = catchAsyncErr(async (req, res) => {
 export const login = catchAsyncErr(async (req, res) => {
   const { user } = await loginUserServise(req.body);
 
-  res.status(201).json({
+  if (!user) {
+    res.status(400).json({
+      message: 'All fields is required'
+    })
+  }
+
+  res.status(200).json({
     token: user.token,
     user: {
       email: user.email,
@@ -42,4 +49,16 @@ export const getCurrent = (req, res) => {
   res.status(200).json({
     user: req.user
   })
-}
+};
+
+export const updateAvatar = catchAsyncErr(async (req, res) => {
+  if (req.file) {
+
+    const avatar = await resizeImg(req.file);
+    const user = await updateUserAvatar(req.user._id, avatar);
+    
+    res.status(200).json({
+      avatrURL: user.avatarURL
+    })
+  }
+});
