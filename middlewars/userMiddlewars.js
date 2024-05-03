@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
-import { registerUserSchema, loginUserShema } from "../schemas/usersSchems.js";
+import { registerUserSchema, loginUserShema, verificationSchema } from "../schemas/usersSchems.js";
 import { checkToken } from "../services/jwtServises.js";
 import { catchAsyncErr } from "../utils/catchAsyncErr.js";
 
@@ -93,3 +93,15 @@ export const uploadAvatar = multer({
     fileSize: 2 * 1024 * 1024
   }
 }).single('avatar');
+
+export const verification = (req, res, next) => {
+  const { value, error } = verificationSchema.validate(req.body);
+
+  if (error) {
+    throw HttpError(400, error.message)
+  }
+
+  req.body = value;
+
+  next()
+};
