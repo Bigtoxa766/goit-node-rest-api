@@ -21,3 +21,9 @@ export const loginUserShema = Joi.object({
   }).required(),
    password: Joi.string().required()
 });
+
+export const verificationSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    "any.required": "missing required field email",
+  }),
+});
